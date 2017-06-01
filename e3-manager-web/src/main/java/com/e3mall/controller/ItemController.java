@@ -50,5 +50,68 @@ public class ItemController {
 		E3Result result =  itemSerivce.addItem(item,desc);
 		return result;
 	}
+	/* 
+	 * 删除商品
+	 * url /rest/item/delete
+	 * 参数  ids
+	 * 返回值 E3Result
+	 */
+	@RequestMapping("/rest/item/delete")
+	@ResponseBody
+	public E3Result deleteItems(Long[] ids){
+		E3Result result = itemSerivce.deleteItems(ids);
+		return result;
+	}
+	/**
+	 * 商品下架
+	 * url /rest/item/instock
+	 * 参数 ids
+	 * 返回值 E3Result
+	 */
+	@RequestMapping("/rest/item/instock")
+	@ResponseBody
+	public E3Result updateInstockItems(Long[] ids){
+		E3Result result =  itemSerivce.updateInstockItems(ids);
+		return result;
+	}
+	/*
+	 * 商品上架
+	 * url /rest/item/reshelf
+	 * 参数 ids
+	 * 返回值 E3Result
+	 */
+	@RequestMapping("/rest/item/reshelf")
+	@ResponseBody
+	public E3Result updateReshelfItems(Long[] ids){
+		E3Result result = itemSerivce.updateReshelfItems(ids);
+		return result;
+	}
+	/*
+	 * 查看商品描述
+	 * url /rest/item/query/item/desc/{id}
+	 * 参数 id
+	 * 返回值 E3Result  data为 ItemDesc
+	 */
+	@RequestMapping("/rest/item/query/item/desc/{id}")
+	@ResponseBody
+	public E3Result getItemDescById(@PathVariable("id") Long itemId){
+		E3Result result = itemSerivce.getItemDescById(itemId);
+		return result;
+	}
+	/*
+	 * 修改商品
+	 * url /rest/item/update
+	 * 参数 item  desc
+	 * 返回值 E3Result
+	 */
+	@RequestMapping("/rest/item/update")
+	@ResponseBody
+	public E3Result updateItem(TbItem item,String desc){
+		E3Result result = itemSerivce.updateItem(item,desc);
+		return result;
+	}
+	
+	
+	
 	
 }

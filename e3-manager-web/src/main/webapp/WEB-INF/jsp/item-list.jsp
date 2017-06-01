@@ -17,7 +17,7 @@
         </tr>
     </thead>
 </table>
-<div id="itemEditWindow" class="easyui-window" title="编辑商品" data-options="modal:true,closed:true,iconCls:'icon-save',href:'/rest/page/item-edit'" style="width:80%;height:80%;padding:10px;">
+<div id="itemEditWindow" class="easyui-window" title="编辑商品" data-options="modal:true,closed:true,iconCls:'icon-save',href:'/item-edit'" style="width:80%;height:80%;padding:10px;">
 </div>
 <script>
 
@@ -67,7 +67,7 @@
         				}
         			});
         			
-        			//加载商品规格
+        			 //加载商品规格
         			$.getJSON('/rest/item/param/item/query/'+data.id,function(_data){
         				if(_data && _data.status == 200 && _data.data && _data.data.paramData){
         					$("#itemeEditForm .params").show();
@@ -101,7 +101,7 @@
         				fun:function(node){
         					E3.changeItemParam(node, "itemeEditForm");
         				}
-        			});
+        			}); 
         		}
         	}).window("open");
         }

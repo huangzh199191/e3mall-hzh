@@ -78,6 +78,66 @@ public class ItemServiceImpl implements ItemService {
 		//返回值
 		return E3Result.ok();
 	}
+	//删除商品
+	public E3Result deleteItems(Long[] ids) {
+		for (Long id : ids) {
+			//根据id查询商品
+			TbItem item = itemMapper.selectByPrimaryKey(id);
+			item.setStatus((byte) 3);
+			//更新数据库
+			itemMapper.updateByPrimaryKey(item);
+		}
+		//返回值
+		return E3Result.ok();
+	}
+	//下架商品
+	public E3Result updateInstockItems(Long[] ids) {
+		for (Long id : ids) {
+			TbItem item = itemMapper.selectByPrimaryKey(id);
+			item.setStatus((byte) 2);
+			itemMapper.updateByPrimaryKey(item);
+		}
+		return E3Result.ok();
+	}
+	//上架商品
+	public E3Result updateReshelfItems(Long[] ids) {
+		for (Long id : ids) {
+			TbItem item = itemMapper.selectByPrimaryKey(id);
+			item.setStatus((byte) 1);
+			itemMapper.updateByPrimaryKey(item);
+		}
+		return E3Result.ok();
+	}
+	//查看商品描述
+	public E3Result getItemDescById(Long itemId) {
+		TbItemDesc itemDesc = itemDescMapper.selectByPrimaryKey(itemId);
+		return E3Result.ok(itemDesc);
+	}
+	//修改商品
+	public E3Result updateItem(TbItem item, String desc) {
+		//根据id获得商品
+		TbItem tbItem = itemMapper.selectByPrimaryKey(item.getId());
+		//更改属性
+		tbItem.setCid(item.getCid());
+		tbItem.setTitle(item.getTitle());
+		tbItem.setSellPoint(item.getSellPoint());
+		tbItem.setPrice(item.getPrice());
+		tbItem.setNum(item.getNum());
+		tbItem.setBarcode(item.getBarcode());
+		tbItem.setImage(item.getImage());
+		//更改时间
+		Date date = new Date();
+		tbItem.setUpdated(date);
+		//根据商品id获取商品描述
+		TbItemDesc tbItemDesc = itemDescMapper.selectByPrimaryKey(item.getId());
+		//更改属性
+		tbItemDesc.setItemDesc(desc);
+		tbItemDesc.setUpdated(date);
+		//提交到数据库
+		itemMapper.updateByPrimaryKey(tbItem);
+		itemDescMapper.updateByPrimaryKey(tbItemDesc);
+		return E3Result.ok();
+	}
 	
 	
 }
