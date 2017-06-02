@@ -36,6 +36,7 @@
 	<dubbo:service interface="com.e3mall.service.ItemCatService" ref="itemCatServiceImpl" timeout="300000" />
 	
 	
+	
 </beans>
 
 

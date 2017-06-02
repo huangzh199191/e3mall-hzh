@@ -16,7 +16,7 @@
 	
 	
 	<!-- 配置包扫描controller对象 -->
-	<context:component-scan base-package="com.e3mall.controller"/>
+	<context:component-scan base-package="com.e3mall.portal.controller"/>
 	<!-- 注解驱动，相当于配置最新版的处理器映射器和处理器适配器 --> 
 	<mvc:annotation-driven/>
 	

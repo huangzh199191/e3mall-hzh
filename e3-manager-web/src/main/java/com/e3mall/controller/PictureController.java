@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.e3mall.common.utils.FastDFSClient;
 import com.e3mall.common.utils.JsonUtils;
-import com.e3mall.utils.FastDFSClient;
 
 /*
  * 图片上传

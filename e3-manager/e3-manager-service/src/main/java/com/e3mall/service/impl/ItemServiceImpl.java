@@ -135,7 +135,8 @@ public class ItemServiceImpl implements ItemService {
 		tbItemDesc.setUpdated(date);
 		//提交到数据库
 		itemMapper.updateByPrimaryKey(tbItem);
-		itemDescMapper.updateByPrimaryKey(tbItemDesc);
+		itemDescMapper.updateByPrimaryKeyWithBLOBs(tbItemDesc);
+		//itemDescMapper.updateByPrimaryKey(tbItemDesc);
 		return E3Result.ok();
 	}
 	
