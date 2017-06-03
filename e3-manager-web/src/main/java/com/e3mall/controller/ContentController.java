@@ -51,6 +51,21 @@ public class ContentController {
 		return result;
 	}
 	/*
+	 * 根据id查询内容
+	 * url /content/getContent
+	 * 参数 id
+	 * 返回值  E3Result
+	 */
+	@RequestMapping("/content/getContent")
+	@ResponseBody
+	public E3Result getContentById(Long id){
+		E3Result result = contentService.getContentById(id);
+		return result;
+	}
+	
+	
+	
+	/*
 	 * 修改内容
 	 * url /rest/content/edit
 	 * 参数  Tbcontent

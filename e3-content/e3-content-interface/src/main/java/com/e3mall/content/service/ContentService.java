@@ -14,4 +14,6 @@ public interface ContentService {
 
 	E3Result deleteContent(Long[] ids);
 
+	E3Result getContentById(Long id);
+
 }

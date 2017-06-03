@@ -77,5 +77,10 @@ public class ContentServiceImpl implements ContentService {
 		}
 		return E3Result.ok();
 	}
+	//根据id查询内容
+	public E3Result getContentById(Long id) {
+		TbContent content = contentMapper.selectByPrimaryKey(id);
+		return E3Result.ok(content);
+	}
 
 }

@@ -64,21 +64,42 @@ var contentListToolbar = [{
     		$.messager.alert('提示','只能选择一个内容!');
     		return ;
     	}
+    	//编辑窗口会创建两次，本页面一次，common.js中一次
+    	var number = 0;//记录调用次数
 		E3.createWindow({
 			url : "/content-edit",
 			onLoad : function(){
+				number = number + 1;
+				if(number == 2){
+					return;
+				}
 				var data = $("#contentList").datagrid("getSelections")[0];
-				$("#contentEditForm").form("load",data);
+				//添加一个get请求，根据ID去查询这条内容的全部信息
+				//因为列表查询的时候就没有查询content字段
+				var url = "/content/getContent";
+				var param = {"id":data.id};
+				$.get(url,param,function(result){
+					if(result.status==200){
+						//重新获得根据id查询的内容
+						data = result.data;
+						
+						
+						$("#contentEditForm").form("load",data);
+						
+						// 实现图片
+						if(data.pic){
+							$("#contentEditForm [name=pic]").after("<a href='"+data.pic+"' target='_blank'><img src='"+data.pic+"' width='80' height='50'/></a>");	
+						}
+						if(data.pic2){
+							$("#contentEditForm [name=pic2]").after("<a href='"+data.pic2+"' target='_blank'><img src='"+data.pic2+"' width='80' height='50'/></a>");					
+						}
+						
+						contentEditEditor.html(data.content);
+					}
+					
+					
+				})
 				
-				// 实现图片
-				if(data.pic){
-					$("#contentEditForm [name=pic]").after("<a href='"+data.pic+"' target='_blank'><img src='"+data.pic+"' width='80' height='50'/></a>");	
-				}
-				if(data.pic2){
-					$("#contentEditForm [name=pic2]").after("<a href='"+data.pic2+"' target='_blank'><img src='"+data.pic2+"' width='80' height='50'/></a>");					
-				}
-				
-				contentEditEditor.html(data.content);
 			}
 		});    	
     }
