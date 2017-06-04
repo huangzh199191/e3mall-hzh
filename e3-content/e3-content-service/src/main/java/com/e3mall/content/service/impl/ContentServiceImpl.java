@@ -82,5 +82,13 @@ public class ContentServiceImpl implements ContentService {
 		TbContent content = contentMapper.selectByPrimaryKey(id);
 		return E3Result.ok(content);
 	}
+	//通过分类id查询内容
+	public List<TbContent> getContentListByCategoryId(Long categoryId) {
+		TbContentExample example = new TbContentExample();
+		Criteria criteria = example.createCriteria();
+		criteria.andCategoryIdEqualTo(categoryId);
+		List<TbContent> list = contentMapper.selectByExample(example);
+		return list;
+	}
 
 }

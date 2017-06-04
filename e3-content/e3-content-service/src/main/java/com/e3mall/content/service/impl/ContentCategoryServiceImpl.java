@@ -30,6 +30,8 @@ public class ContentCategoryServiceImpl implements ContentCategoryService {
 		Criteria criteria = example.createCriteria();
 		//设置查询条件
 		criteria.andParentIdEqualTo(parentId);
+		//删除的节点不再显示
+		criteria.andStatusEqualTo(1);
 		//执行查询
 		List<TbContentCategory> contentCategoryList = contentCategoryMapper.selectByExample(example);
 		//返回结果
@@ -55,7 +57,7 @@ public class ContentCategoryServiceImpl implements ContentCategoryService {
 		contentCategory.setStatus(1);
 		//排列序号，表示同级类目的展现次序，如数值相等则按名称次序排列。取值范围:大于零的整数
 		contentCategory.setSortOrder(1);
-		//该类目是否为父类目，1为true，0为false
+		//该类目是否为父类目，1为true，0为false,新添加的一定是叶子节点
 		contentCategory.setIsParent(false);
 		Date date = new Date();
 		contentCategory.setCreated(date);
@@ -86,8 +88,10 @@ public class ContentCategoryServiceImpl implements ContentCategoryService {
 	public void deleteContentCategory(Long id) {
 		//根据id查询内容分类
 		TbContentCategory contentCategory = contentCategoryMapper.selectByPrimaryKey(id);
-		//根据id删除该分类
-		contentCategoryMapper.deleteByPrimaryKey(id);
+		//根据id删除该分类  可选值:1(正常),2(删除)
+		contentCategory.setStatus(2);
+		contentCategory.setUpdated(new Date());
+		contentCategoryMapper.updateByPrimaryKey(contentCategory);
 		//判断该分类的父节点是否还有子节点，没有就设置父节点的isParent为false
 		//1）获取该分类的父节点
 		Long parentId = contentCategory.getParentId();
@@ -118,17 +122,16 @@ public class ContentCategoryServiceImpl implements ContentCategoryService {
 		if(list.size()>0){
 			//遍历所有的子节点
 			for (TbContentCategory contentCategory : list) {
+				//删除该节点  1正常 2删除
+				contentCategory.setStatus(2);
+				contentCategory.setUpdated(new Date());
+				contentCategoryMapper.updateByPrimaryKey(contentCategory);
+				
 				//判断子节点是否为父节点
 				//是父节点
 				if(contentCategory.getIsParent()){
-					//删除该节点
-					contentCategoryMapper.deleteByPrimaryKey(contentCategory.getId());
 					//递归调用
 					this.deleteSonsByParentId(contentCategory.getId());
-				}else{
-					//不是父节点
-					//删除该节点
-					contentCategoryMapper.deleteByPrimaryKey(contentCategory.getId());
 				}
 			}
 		}

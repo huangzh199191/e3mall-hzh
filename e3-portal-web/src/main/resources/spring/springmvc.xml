@@ -26,11 +26,11 @@
 		<property name="suffix" value=".jsp"/>
 	</bean>
 	
-	<!--静态资源的映射-->
+	<!--静态资源的映射
 	<mvc:resources location="/css/" mapping="/css/**"/>
 	<mvc:resources location="/js/" mapping="/js/**"/>
 	<mvc:resources location="/images/" mapping="/images/**"/>
-	
+	-->
 	
 	
 	<!-- 配置文件上传解析器 -->  
@@ -43,8 +43,8 @@
     </bean> 
 	
 	
-	<!-- 引用dubbo服务 
+	<!-- 引用dubbo服务 -->
 	<dubbo:application name="e3-portal-web"/>
 	<dubbo:registry protocol="zookeeper" address="192.168.25.129:2181"/>	
-	-->
+	<dubbo:reference interface="com.e3mall.content.service.ContentService" id="contentService" />
 </beans>

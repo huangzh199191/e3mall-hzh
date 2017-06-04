@@ -11,6 +11,13 @@
   <packaging>war</packaging>
   
   <dependencies>
+  		<dependency>
+			<groupId>com.e3mall</groupId>
+			<artifactId>e3-content-interface</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+  
+  
 		<!-- JSP 相关 -->
 		<dependency>
 			<groupId>jstl</groupId>

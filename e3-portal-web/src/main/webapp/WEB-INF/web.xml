@@ -21,7 +21,8 @@
   </servlet>
   <servlet-mapping>
   	<servlet-name>springmvc</servlet-name>
-  	<url-pattern>/</url-pattern>
+  	<!-- 页面伪静态化（搜索引擎比较喜欢静态页面） -->
+  	<url-pattern>*.html</url-pattern>
   </servlet-mapping>
   
  <!-- post提交的过滤器 -->
