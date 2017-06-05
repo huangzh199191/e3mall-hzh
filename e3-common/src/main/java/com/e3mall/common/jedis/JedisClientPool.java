@@ -1,4 +1,4 @@
-package com.e3mall.content.redis;
+package com.e3mall.common.jedis;
 
 import java.util.List;
 
