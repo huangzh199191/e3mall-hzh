@@ -40,7 +40,7 @@
 	
 	<!-- mapper扫描器 -->
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-		<property name="basePackage" value="com.e3mall.dao"/>
+		<property name="basePackage" value="com.e3mall.dao,com.e3mall.search.mapper"/>
 	</bean>
 </beans>
 
