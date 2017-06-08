@@ -10,19 +10,24 @@ import javax.jms.Message;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
 
+import com.e3mall.common.jedis.JedisClient;
 import com.e3mall.common.pojo.E3Result;
 import com.e3mall.common.pojo.EasyuiDatagridResult;
 import com.e3mall.common.utils.IDUtils;
+import com.e3mall.common.utils.JsonUtils;
 import com.e3mall.dao.TbItemDescMapper;
 import com.e3mall.dao.TbItemMapper;
 import com.e3mall.pojo.TbItem;
 import com.e3mall.pojo.TbItemDesc;
 import com.e3mall.pojo.TbItemExample;
+import com.e3mall.pojo.TbItemExample.Criteria;
 import com.e3mall.service.ItemService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -41,16 +46,53 @@ public class ItemServiceImpl implements ItemService {
 	private TbItemMapper itemMapper;
 	@Autowired
 	private TbItemDescMapper itemDescMapper;
+	
+	//redis缓存相关
+	@Autowired
+	private JedisClient jedisClient;
+	@Value("${ITEM_INFO}")
+	private String ITEM_INFO;
+	@Value("${ITEM_EXPIRE}")
+	private Integer ITEM_EXPIRE;
+	
 	//发送消息相关
 	@Autowired
 	private JmsTemplate jmsTemplate;
 	@Resource(name="itemChangeTopic")
 	private Destination destination;
 	
-	@Override
+	//根据商品id查询商品
 	public TbItem getItemById(Long id) {
-		TbItem tbItem = itemMapper.selectByPrimaryKey(id);
-		return tbItem;
+		try {
+			//查询redis缓存,有就直接用
+			String json = jedisClient.get(ITEM_INFO+":"+id+":BASE");
+			if(StringUtils.isNotBlank(json)){
+				return JsonUtils.jsonToObject(json, TbItem.class);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		//TbItem tbItem = itemMapper.selectByPrimaryKey(id);
+		//设置查询条件
+		TbItemExample example = new TbItemExample();
+		Criteria criteria = example.createCriteria();
+		criteria.andIdEqualTo(id);
+		List<TbItem> list = itemMapper.selectByExample(example);
+		if(list!=null&&list.size()>0){
+			TbItem tbItem = list.get(0);
+			try {
+				//添加到缓存
+				String json = JsonUtils.ObjectToJson(tbItem);
+				jedisClient.set(ITEM_INFO+":"+id+":BASE", json);
+				//设置过期时间
+				jedisClient.expire(ITEM_INFO+":"+id+":BASE", ITEM_EXPIRE);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			return tbItem;
+		}
+		return null;
 	}
 	//商品列表
 	public EasyuiDatagridResult getItemList(Integer page, Integer rows) {
@@ -98,6 +140,9 @@ public class ItemServiceImpl implements ItemService {
 				return textMessage;
 			}
 		});
+		//同步redis缓存
+		jedisClient.del(ITEM_INFO+":"+itemId+":BASE");
+		jedisClient.del(ITEM_INFO+":"+itemId+":DESC");
 		
 		//返回值
 		return E3Result.ok();
@@ -108,6 +153,11 @@ public class ItemServiceImpl implements ItemService {
 			//根据id查询商品
 			TbItem item = itemMapper.selectByPrimaryKey(id);
 			item.setStatus((byte) 3);
+			
+			//同步redis缓存
+			jedisClient.del(ITEM_INFO+":"+id+":BASE");
+			jedisClient.del(ITEM_INFO+":"+id+":DESC");
+			
 			//更新数据库
 			itemMapper.updateByPrimaryKey(item);
 		}
@@ -119,6 +169,11 @@ public class ItemServiceImpl implements ItemService {
 		for (Long id : ids) {
 			TbItem item = itemMapper.selectByPrimaryKey(id);
 			item.setStatus((byte) 2);
+			
+			//同步redis缓存
+			jedisClient.del(ITEM_INFO+":"+id+":BASE");
+			jedisClient.del(ITEM_INFO+":"+id+":DESC");
+			
 			itemMapper.updateByPrimaryKey(item);
 		}
 		return E3Result.ok();
@@ -128,13 +183,39 @@ public class ItemServiceImpl implements ItemService {
 		for (Long id : ids) {
 			TbItem item = itemMapper.selectByPrimaryKey(id);
 			item.setStatus((byte) 1);
+			
+			//同步redis缓存
+			jedisClient.del(ITEM_INFO+":"+id+":BASE");
+			jedisClient.del(ITEM_INFO+":"+id+":DESC");
+			
 			itemMapper.updateByPrimaryKey(item);
 		}
 		return E3Result.ok();
 	}
 	//查看商品描述
 	public E3Result getItemDescById(Long itemId) {
+		//查询缓存
+		try {
+			String json = jedisClient.get(ITEM_INFO+":"+itemId+":DESC");
+			if(StringUtils.isNotBlank(json)){
+				TbItemDesc tbItemDesc = JsonUtils.jsonToObject(json, TbItemDesc.class);
+				return E3Result.ok(tbItemDesc);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		TbItemDesc itemDesc = itemDescMapper.selectByPrimaryKey(itemId);
+		
+		//添加到缓存
+		try {
+			String json = JsonUtils.ObjectToJson(itemDesc);
+			jedisClient.set(ITEM_INFO+":"+itemId+":DESC", json);
+			//过期时间
+			jedisClient.expire(ITEM_INFO+":"+itemId+":DESC", ITEM_EXPIRE);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return E3Result.ok(itemDesc);
 	}
 	//修改商品
@@ -170,6 +251,11 @@ public class ItemServiceImpl implements ItemService {
 				return textMessage;
 			}
 		});
+		
+		//同步redis缓存
+		jedisClient.del(ITEM_INFO+":"+tbItem.getId()+":BASE");
+		jedisClient.del(ITEM_INFO+":"+tbItem.getId()+":DESC");
+		
 		return E3Result.ok();
 	}
 	

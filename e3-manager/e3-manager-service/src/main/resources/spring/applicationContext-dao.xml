@@ -20,7 +20,7 @@
 	http://cxf.apache.org/schemas/jaxws.xsd">
 	
 	<!-- 加载外部配置文件 -->
-	<context:property-placeholder location="classpath:conf/db.properties" />
+	<context:property-placeholder location="classpath:conf/*.properties" />
 	<!-- 配置数据源 -->
 	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
 		<property name="driverClassName" value="${jdbc.driver}"/>

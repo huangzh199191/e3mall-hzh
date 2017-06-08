@@ -8,8 +8,8 @@
 	<title>${item.title } - 宜立方商城</title>
 	<script>
         var _SF_CFG = {
-	    www_url:'http://www.e3mall.cn',
-            m_url:'http://m.e3mall.cn',
+	    www_url:'http://www.e3mall.com',
+            m_url:'http://m.e3mall.com',
             productId:${item.id},
             number: 1600229585,
             minBuy: 1,
@@ -25,9 +25,9 @@
             sfprice: 0,
             price:0,
             warehouse: 0,
-            homeurl: 'http://home.e3mall.cn',
-            staticurl: 'http://i.e3mall.cn/html',
-            passporturl: 'https://passport.e3mall.cn',
+            homeurl: 'http://home.e3mall.com',
+            staticurl: 'http://i.e3mall.com/html',
+            passporturl: 'https://passport.e3mall.com',
             businessModel: 3,
 		commentType : 0
 	};
