@@ -37,6 +37,9 @@ public class SearchController {
 		
 		//处理get请求乱码
 		keyword = new String(keyword.getBytes("iso8859-1"), "utf-8");
+
+		//异常测试
+		//int i = 1/0;
 		
 		SearchResult result = searchService.search(keyword, page, PAGE_ROWS);
 		

@@ -52,4 +52,21 @@ public class SearchItemServiceImpl implements SearchItemService {
 		}
 	}
 
+	//商品更改时（添加，修改），更新索引库
+	public E3Result addSearchItemToIndex(SearchItem searchItem) throws Exception {
+		//获得文档对象
+		SolrInputDocument document = new SolrInputDocument();
+		//创建域
+		document.addField("id", searchItem.getId());
+		document.addField("item_title", searchItem.getTitle());
+		document.addField("item_price", searchItem.getPrice());
+		document.addField("item_sell_point", searchItem.getSell_point());
+		document.addField("item_image", searchItem.getImage());
+		document.addField("item_category_name", searchItem.getItem_category_name());
+		//把文档添加到索引库
+		solrServer.add(document);
+		solrServer.commit();
+		return E3Result.ok();
+	}
+
 }

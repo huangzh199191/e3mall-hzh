@@ -3,7 +3,16 @@ package com.e3mall.service.impl;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.Resource;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
 
 import com.e3mall.common.pojo.E3Result;
@@ -32,6 +41,11 @@ public class ItemServiceImpl implements ItemService {
 	private TbItemMapper itemMapper;
 	@Autowired
 	private TbItemDescMapper itemDescMapper;
+	//发送消息相关
+	@Autowired
+	private JmsTemplate jmsTemplate;
+	@Resource(name="itemChangeTopic")
+	private Destination destination;
 	
 	@Override
 	public TbItem getItemById(Long id) {
@@ -58,7 +72,7 @@ public class ItemServiceImpl implements ItemService {
 	//添加商品
 	public E3Result addItem(TbItem item, String desc) {
 		//商品id
-		long itemId = IDUtils.genItemId();
+		final long itemId = IDUtils.genItemId();
 		//补充item属性
 		item.setId(itemId);
 		item.setStatus((byte) 1);
@@ -75,6 +89,16 @@ public class ItemServiceImpl implements ItemService {
 		itemDesc.setItemDesc(desc);
 		//向商品描述表添加数据
 		itemDescMapper.insert(itemDesc);
+		
+		//发送消息
+		jmsTemplate.send(destination, new MessageCreator() {
+			@Override
+			public Message createMessage(Session session) throws JMSException {
+				TextMessage textMessage = session.createTextMessage(itemId+"");
+				return textMessage;
+			}
+		});
+		
 		//返回值
 		return E3Result.ok();
 	}
@@ -116,7 +140,7 @@ public class ItemServiceImpl implements ItemService {
 	//修改商品
 	public E3Result updateItem(TbItem item, String desc) {
 		//根据id获得商品
-		TbItem tbItem = itemMapper.selectByPrimaryKey(item.getId());
+		final TbItem tbItem = itemMapper.selectByPrimaryKey(item.getId());
 		//更改属性
 		tbItem.setCid(item.getCid());
 		tbItem.setTitle(item.getTitle());
@@ -137,6 +161,15 @@ public class ItemServiceImpl implements ItemService {
 		itemMapper.updateByPrimaryKey(tbItem);
 		itemDescMapper.updateByPrimaryKeyWithBLOBs(tbItemDesc);
 		//itemDescMapper.updateByPrimaryKey(tbItemDesc);
+		
+		//发送消息
+		jmsTemplate.send(destination, new MessageCreator() {
+			@Override
+			public Message createMessage(Session session) throws JMSException {
+				TextMessage textMessage = session.createTextMessage(tbItem.getId()+"");
+				return textMessage;
+			}
+		});
 		return E3Result.ok();
 	}
 	
