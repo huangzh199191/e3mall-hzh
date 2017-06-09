@@ -28,6 +28,12 @@
 		<property name="suffix" value=".jsp"/>
 	</bean>
 	
+	<!-- freemarker配置 -->
+	<bean id="freeMarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">  
+        <property name="templateLoaderPath" value="/WEB-INF/ftl"/>  
+        <property name="defaultEncoding" value="utf-8"/>  
+    </bean> 
+	
 	
 	<!-- 引用dubbo服务 -->
 	<dubbo:application name="e3-item-web"/>

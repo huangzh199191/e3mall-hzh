@@ -21,7 +21,7 @@ public class ItemChangeMessageListener implements MessageListener {
 	@Autowired
 	private SearchItemMapper searchItemMapper;
 	@Autowired
-	private SearchItemService searchItemService;
+	private SolrServer solrServer;
 	
 	@Override
 	public void onMessage(Message message) {
@@ -36,20 +36,26 @@ public class ItemChangeMessageListener implements MessageListener {
 			//采用3次尝试的方法，每尝试一次休眠一秒 
 			SearchItem searchItem=null;
 			for(int i=0;i<3;i++){
-				try {
 					Thread.sleep(1000);
 					searchItem = searchItemMapper.getSearchItemById(itemId);
 					//获得商品信息，跳出循环
 					if(searchItem!=null){
 						break;
 					}
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
 			}
 			//3.将查询到的商品添加到索引库
-			searchItemService.addSearchItemToIndex(searchItem);
-			
+			//获得文档对象
+			SolrInputDocument document = new SolrInputDocument();
+			//创建域
+			document.addField("id", searchItem.getId());
+			document.addField("item_title", searchItem.getTitle());
+			document.addField("item_price", searchItem.getPrice());
+			document.addField("item_sell_point", searchItem.getSell_point());
+			document.addField("item_image", searchItem.getImage());
+			document.addField("item_category_name", searchItem.getItem_category_name());
+			//把文档添加到索引库
+			solrServer.add(document);
+			solrServer.commit();
 		}  catch (Exception e) {
 			e.printStackTrace();
 		}
