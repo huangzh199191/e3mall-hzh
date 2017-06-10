@@ -2,6 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>${item.title } - 宜立方商城</title>
 	<script>
         var _SF_CFG = {
@@ -71,7 +72,7 @@
                 <div class="pItemsPrice" id="price-sf">
                 	<div class="priceBox">
                 		<span class="dt">优选价：</span><span class="rmb">￥</span>
-                		<strong class="price"><fmt:formatNumber groupingUsed="false" maxFractionDigits="2" minFractionDigits="2" value="${item.price / 100 }"/></strong>
+                		<strong class="price">￥${item.price / 100 }</strong>
                 	</div>
                 	<div class="boxWb"></div><div id="productStamp" class="productStamp_1"></div></div>
                 <div class="clear"></div>
