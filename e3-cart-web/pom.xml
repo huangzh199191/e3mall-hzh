@@ -12,10 +12,16 @@
   <name>购物车表现层</name>
   
   <dependencies>
+  		
 		<dependency>
 			<groupId>com.e3mall</groupId>
 			<artifactId>e3-manager-interface</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.e3mall</groupId>
+		    <artifactId>e3-sso-interface</artifactId>
+		    <version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<!-- Spring -->
 		<dependency>

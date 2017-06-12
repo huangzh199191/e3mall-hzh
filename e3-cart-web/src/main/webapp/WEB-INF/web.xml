@@ -3,11 +3,6 @@
   <display-name>e3-cart-web</display-name>
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
-    <welcome-file>index.htm</welcome-file>
-    <welcome-file>index.jsp</welcome-file>
-    <welcome-file>default.html</welcome-file>
-    <welcome-file>default.htm</welcome-file>
-    <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
     <!-- springmvc的前端控制器 -->
   <servlet>
@@ -23,6 +18,10 @@
   	<servlet-name>springmvc</servlet-name>
   	<!-- 页面伪静态化（搜索引擎比较喜欢静态页面） -->
   	<url-pattern>*.html</url-pattern>
+  </servlet-mapping>
+    <servlet-mapping>
+  	<servlet-name>springmvc</servlet-name>
+  	<url-pattern>*.action</url-pattern>
   </servlet-mapping>
   
  <!-- post提交的过滤器 -->
