@@ -3,15 +3,19 @@ package com.e3mall.sso.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.e3mall.common.pojo.E3Result;
 import com.e3mall.common.utils.CookieUtils;
+import com.e3mall.common.utils.JsonUtils;
 import com.e3mall.pojo.TbUser;
 import com.e3mall.sso.service.UserService;
 
@@ -52,7 +56,7 @@ public class UserController {
 	 * 参数 	tbUser
 	 * 返回值 E3Result
 	 */
-	@RequestMapping("/user/register")
+	@RequestMapping(value="/user/register",method=RequestMethod.POST)
 	@ResponseBody
 	public E3Result addUser(TbUser user){
 		E3Result result = userService.addUser(user);
@@ -73,7 +77,7 @@ public class UserController {
 		E3Result result = userService.login(username, password);
 		//登录成功
 		//获得用户口令token,存入session
-		if(result.getData()!=null){
+		if(result.getStatus()==200){
 			String token = result.getData().toString();
 			CookieUtils.setCookie(request, response, COOKIE_TOKEN_KEY, token);
 		}
@@ -86,11 +90,17 @@ public class UserController {
 	 * 参数   token
 	 * 返回值 E3Result  包装TbItem
 	 */
-	@RequestMapping("/user/token/{token}")
+	@RequestMapping(value="/user/token/{token}",
+			produces=MediaType.APPLICATION_JSON_VALUE+";charset=utf-8")
 	@ResponseBody
-	public E3Result getUserByToken(@PathVariable String token){
+	public String getUserByToken(@PathVariable String token,String callback){
 		E3Result result = userService.getUserByToken(token);
-		return result;
+		//jsonp跨域请求
+		if(StringUtils.isNotBlank(callback)){
+			//响应结果，拼接一个js语句
+			return callback+"("+JsonUtils.ObjectToJson(result)+");";
+		}
+		return JsonUtils.ObjectToJson(result);
 	}
 	
 	/*
