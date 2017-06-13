@@ -110,9 +110,11 @@ public class UserController {
 	 * 返回值 E3Result
 	 */
 	@RequestMapping("/user/logout/{token}")
-	@ResponseBody
-	public E3Result logout(@PathVariable String token){
+	public String logout(@PathVariable String token,
+			HttpServletRequest request,HttpServletResponse response){
+		//清除用户登录的cookie
+		CookieUtils.deleteCookie(request, response, COOKIE_TOKEN_KEY);
 		E3Result result = userService.logout(token);
-		return result;
+		return "redirect:http://localhost:8082/";
 	}
 }

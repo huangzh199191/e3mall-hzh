@@ -4,6 +4,14 @@ var CART = {
 			var _thisInput = $(this).siblings("input");
 			_thisInput.val(eval(_thisInput.val()) + 1);
 			$.post("/cart/update/num/"+_thisInput.attr("itemId")+"/"+_thisInput.val()+".action",function(data){
+				var subtotal = 0;
+				var _this = $(".itemnum");
+				subtotal = (eval(_this.attr("itemPrice")) * 10000 * eval(_this.val())) / 10000;
+				$("#total_price").html(new Number(subtotal/100).toFixed(2)).priceFormat({ //价格格式化插件
+					 prefix: '¥',
+					 thousandsSeparator: ',',
+					 centsLimit: 2
+				});
 				CART.refreshTotalPrice();
 			});
 		});
@@ -14,7 +22,14 @@ var CART = {
 			}
 			_thisInput.val(eval(_thisInput.val()) - 1);
 			$.post("/cart/update/num/"+_thisInput.attr("itemId")+"/"+_thisInput.val()+".action",function(data){
-				
+				var subtotal = 0;
+				var _this = $(".itemnum");
+				subtotal = (eval(_this.attr("itemPrice")) * 10000 * eval(_this.val())) / 10000;
+				$("#total_price").html(new Number(subtotal/100).toFixed(2)).priceFormat({ //价格格式化插件
+					 prefix: '¥',
+					 thousandsSeparator: ',',
+					 centsLimit: 2
+				});
 				CART.refreshTotalPrice();
 			});
 		});
@@ -27,10 +42,12 @@ var CART = {
 	},
 	refreshTotalPrice : function(){ //重新计算总价
 		var total = 0;
+		
 		$(".itemnum").each(function(i,e){
 			var _this = $(e);
 			total += (eval(_this.attr("itemPrice")) * 10000 * eval(_this.val())) / 10000;
 		});
+
 		$("#allMoney2").html(new Number(total/100).toFixed(2)).priceFormat({ //价格格式化插件
 			 prefix: '¥',
 			 thousandsSeparator: ',',
